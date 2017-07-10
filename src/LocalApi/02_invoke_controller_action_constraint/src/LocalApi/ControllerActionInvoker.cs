@@ -20,6 +20,10 @@ namespace LocalApi
 
         static HttpResponseMessage ProcessConstraint(MethodInfo method, HttpMethod methodConstraint)
         {
+            var attrInfos = method.GetCustomAttributes(typeof(HttpMethod));
+            if(attrInfos.Count != 0 && !attrInfos.Any(attr => attr == methodConstraint)) {
+                return new HttpResponseMessage(HttpStatusCode.MethodNotAllowed);
+            }
             return null;
         }
 
