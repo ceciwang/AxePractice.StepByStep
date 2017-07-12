@@ -15,9 +15,10 @@ namespace LocalApi.Test.DependencyResolverFacts.DefaultImpl
         {
             var controllerTypeResolver = new DefaultHttpControllerTypeResolver();
             var resolver = new DefaultDependencyResolver(controllerTypeResolver.GetControllerTypes(ControllerAssemblies));
+            object service = resolver.GetService(typeof(ControllerWithoutAction));
             Assert.Equal(
-                typeof(ControllerWithoutAction), 
-                resolver.GetService(typeof(ControllerWithoutAction)).GetType());
+                typeof(ControllerWithoutAction),
+                service.GetType());
         }
 
         [Fact]

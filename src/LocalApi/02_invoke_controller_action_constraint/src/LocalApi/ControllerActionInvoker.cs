@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Reflection;
+using LocalApi.MethodAttributes;
 
 namespace LocalApi
 {
@@ -23,23 +26,25 @@ namespace LocalApi
         /*
          * Good job! You have passed the first stage. Now we refactored your code
          * to make the process clearer. Please refer to InvokeAction method.
-         * 
+         *
          * However, we would like to add a constraint on method invokation -- the
-         * HttpMethod constraint. We assumes that all the action method of 
+         * HttpMethod constraint. We assumes that all the action method of
          * HttpController should be annotated by attributes who implements
          * IMethodProvider interface. If there is one attribute matches the constraint,
          * the you should continue invoking action, or else just forbidden the request.
-         * 
+         *
          * Please implements the logic in ProcessConstraint method.
          */
 
         static HttpResponseMessage ProcessConstraint(MethodInfo method, HttpMethod methodConstraint)
         {
-            var attrInfos = method.GetCustomAttributes(typeof(HttpMethod));
-            if(attrInfos.Count != 0 && !attrInfos.Any(attr => attr == methodConstraint)) {
-                return new HttpResponseMessage(HttpStatusCode.MethodNotAllowed);
-            }
-            return null;
+
+            var hasMatch =
+                Attribute
+                    .GetCustomAttributes(method)
+                    .Where(a => a is IMethodProvider)
+                    .Any(a => ((IMethodProvider) a).Method.Equals(methodConstraint));
+            return hasMatch ? null : new HttpResponseMessage(HttpStatusCode.MethodNotAllowed);
         }
 
         #endregion
