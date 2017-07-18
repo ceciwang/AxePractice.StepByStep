@@ -16,15 +16,17 @@ namespace Manualfac
          * 
          * You can add non-public member functions or member variables as you like.
          */
-
+        Dictionary<Type, Func<IComponentContext, Object>> services = new Dictionary<Type, Func<IComponentContext, Object>>(){};
+        
         public void Register<T>(Func<IComponentContext, T> func)
         {
-            throw new NotImplementedException();
+            if(func == null) {throw new ArgumentNullException();}
+            this.services[typeof(T)] = func;
         }
 
         public IComponentContext Build()
         {
-            throw new NotImplementedException();
+            return new ComponentContext(services);
         }
 
         #endregion
