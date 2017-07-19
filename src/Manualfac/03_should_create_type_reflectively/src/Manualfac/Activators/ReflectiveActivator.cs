@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace Manualfac.Activators
 {
@@ -24,7 +25,14 @@ namespace Manualfac.Activators
         {
             var constructors = serviceType.GetConstructors();
             if(1 != constructors.Length) {throw new InvalidOperationException();}
-            return constructors[0].Invoke();
+            var constructorInfo = constructors[0];
+            var params = constructors
+            .GetParameters()
+            .Select(p => 
+                componentContext.ResolveComponent(new TypedService(p.ParameterType)))
+            .ToArray();
+
+            return constructors[0].Invoke(params);
         }
 
         #endregion
