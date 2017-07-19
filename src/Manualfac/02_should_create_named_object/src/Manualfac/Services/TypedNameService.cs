@@ -22,7 +22,7 @@ namespace Manualfac.Services
         {
             if(other == null) { return false;}
             if(Object.ReferenceEquals(this, other)) {return true;}
-            if(this.Id == other.Id){return ture;}
+            if(this.Id == other.Id){return true;}
             return this.serviceType == other.serviceType && this.name == other.name;
         }
 
@@ -35,7 +35,7 @@ namespace Manualfac.Services
 
         public override int GetHashCode()
         {
-            return Id.GetHashCode();
+            return this.serviceType.GetHashCode() + this.name.GetHashCode();
         }
 
         #endregion
