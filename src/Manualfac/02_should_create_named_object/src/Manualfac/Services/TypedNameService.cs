@@ -35,7 +35,7 @@ namespace Manualfac.Services
 
         public override int GetHashCode()
         {
-            return this.serviceType.GetHashCode() + this.name.GetHashCode();
+            return this.serviceType.GetHashCode() ^ this.name.GetHashCode();
         }
 
         #endregion
