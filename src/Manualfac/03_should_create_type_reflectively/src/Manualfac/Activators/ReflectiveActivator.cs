@@ -22,7 +22,9 @@ namespace Manualfac.Activators
 
         public object Activate(IComponentContext componentContext)
         {
-            throw new NotImplementedException();
+            var constructors = serviceType.GetConstructors();
+            if(1 != constructors.Length) {throw new InvalidOperationException();}
+            return constructors[0].Invoke();
         }
 
         #endregion

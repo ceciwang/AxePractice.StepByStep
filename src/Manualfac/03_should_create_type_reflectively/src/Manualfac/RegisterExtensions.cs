@@ -14,9 +14,9 @@ namespace Manualfac
              * Since we have changed the definition of activator. Please re-implement
              * the register extension method.
              */
-
-            throw new NotImplementedException();
-
+            cb.Service = new TypedService(typeof(T));
+            cb.Activator = new DelegatedInstanceActivator(func);
+            return cb;
             #endregion
         }
 
@@ -29,9 +29,9 @@ namespace Manualfac
              * Since you have re-implement Register method, I am sure you can also
              * implement RegisterType method.
              */
-
-            throw new NotImplementedException();
-            
+            cb.Service = new TypedService(typeof(T));
+            cb.Activator = new ReflectiveActivator(typeof(T));  
+            return cb;          
             #endregion
         }
     }
