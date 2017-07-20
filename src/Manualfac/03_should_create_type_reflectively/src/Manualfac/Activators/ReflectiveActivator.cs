@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Manualfac.Services;
 
 namespace Manualfac.Activators
 {
@@ -17,22 +18,22 @@ namespace Manualfac.Activators
         /*
          * This method create instance via reflection. Try evaluating its parameters and
          * inject them using componentContext.
-         * 
+         *
          * No public members are allowed to add.
          */
 
         public object Activate(IComponentContext componentContext)
         {
             var constructors = serviceType.GetConstructors();
-            if(1 != constructors.Length) {throw new InvalidOperationException();}
+            if(1 != constructors.Length) {throw new DependencyResolutionException();}
             var constructorInfo = constructors[0];
-            var params = constructors
+            var parameters = constructorInfo
             .GetParameters()
-            .Select(p => 
+            .Select(p =>
                 componentContext.ResolveComponent(new TypedService(p.ParameterType)))
             .ToArray();
 
-            return constructors[0].Invoke(params);
+            return constructors[0].Invoke(parameters);
         }
 
         #endregion
