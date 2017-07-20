@@ -29,9 +29,12 @@ namespace Manualfac
              * its data. Then attach the registry to Container.
              * 
              */
-
-            throw new NotImplementedException();
-
+            var componentRegistry = new ComponentRegistry();
+            foreach(callback in callbacks)
+            {
+                callback(componentRegistry);
+            }
+            return new Container(componentRegistry);
             #endregion
         }
     }

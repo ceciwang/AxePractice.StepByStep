@@ -44,9 +44,9 @@ namespace Manualfac
              * In order to reuse the code, we re-implement the extension method to replace the
              * instance member function.
              */
-
-            throw new NotImplementedException();
-
+            if(cb == null) {throw new ArgumentNullException(nameof(cb));}
+            if(registration == null) {throw new ArgumentNullException(nameof(registration));}
+            cb.RegisterCallback(r => r.Register(registration));
             #endregion
         }
     }
