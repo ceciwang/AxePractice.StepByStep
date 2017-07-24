@@ -19,11 +19,10 @@ namespace Manualfac
             /*
              * The lifetime scope will track lifetime for instances created.
              */
-
             if (service == null) { throw new ArgumentNullException(nameof(service)); }
             ComponentRegistration componentRegistration = GetComponentRegistration(service);
-            return componentRegistration.Activator.Activate(this);
-
+            var createdInstance =  componentRegistration.Activator.Activate(this);
+            disposer.AddItemsToDispose(createdInstance);
             #endregion
         }
 
@@ -35,7 +34,7 @@ namespace Manualfac
              * Create a new lifetime scope. The created scope has no relationship except the
              * component registry.
              */
-
+            
             throw new NotImplementedException();
 
             #endregion

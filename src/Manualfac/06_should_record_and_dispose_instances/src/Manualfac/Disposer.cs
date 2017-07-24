@@ -9,15 +9,18 @@ namespace Manualfac
         /*
          * The disposer is used for disposing all disposable items added when it is disposed.
          */
-
+        HastSet<object> items = new HastSet<object>(){};
+        
         public void AddItemsToDispose(object item)
         {
-            throw new NotImplementedException();
+            this.items.Add(item);
         }
 
         protected override void Dispose(bool disposing)
         {
-            throw new NotImplementedException();
+            if(disposing){
+                this.items = null;
+            }
         }
 
         #endregion
