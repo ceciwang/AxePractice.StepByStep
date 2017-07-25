@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Manualfac.Sources;
 
 namespace Manualfac
 {
@@ -35,19 +36,20 @@ namespace Manualfac
 
             /*
              * The following code will go through the source list and find the first source who
-             * can match the service. If no-one can match, then query failed. The function will 
+             * can match the service. If no-one can match, then query failed. The function will
              * return fasle. If we have found one. Then create a concrete component registration
              * and add it to serviceInfos for speed acceleration.
              */
             var source = sources
-                .Select(s => s as OpenGenericRegistrationSource)
-                .FirstOrDefault(s => null != s)
+                .OfType<OpenGenericRegistrationSource>()
+                .FirstOrDefault();
 
             if(source != null){
                 registration = source.RegistrationFor(service);
                 Register(registration);
                 return true;
             }
+            registration = null;
             return false;
             #endregion
         }

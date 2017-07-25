@@ -10,8 +10,8 @@ namespace Manualfac.Sources
 
         public OpenGenericRegistrationSource(IServiceWithType genericService, Type implementorType)
         {
-            this.genericService = genericService;
-            this.implementorType = implementorType;
+            this.genericService = genericService; //typeof(G<>) service
+            this.implementorType = implementorType; //typeof(G<>)
         }
 
         public ComponentRegistration RegistrationFor(Service service)
@@ -22,15 +22,20 @@ namespace Manualfac.Sources
              * This source has 2 properties: the genericService is used as the key to match the
              * service argument. And the implementorType is used to record the actual type used
              * to create instances.
-             * 
-             * This method will try matching the constructed service to an non-constructed 
+             *
+             * This method will try matching the constructed service to an non-constructed
              * generic type of genericService. If it is matched, then an concrete component
              * registration needed wll be invoked.
              */
-            var genericDef = genericService.ServiceType;
-            if(!genericDef.IsGenericTypeDefinition()) {throw new ArgumentException();}
-            var genericImpl = genericDef.MakeGenericType(implementorType);
-            return new ComponentRegistration(service, new ReflectiveActivator(genericImpl));
+            //service : IG<int>
+
+            Type genericDef = implementorType;
+            if(!genericDef.IsGenericTypeDefinition) {throw new ArgumentException();}
+            Type givenServiceType = ((IServiceWithType)service).ServiceType;
+//            if(genericDef.GetGenericTypeDefinition() != givenServiceType.GetGenericTypeDefinition()) { throw new InvalidOperationException();}
+            var genericArguments = givenServiceType.GenericTypeArguments;
+            var constructedGeneric = genericDef.MakeGenericType(genericArguments);
+            return new ComponentRegistration(service, new ReflectiveActivator(constructedGeneric));
             #endregion
         }
     }
