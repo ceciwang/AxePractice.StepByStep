@@ -12,7 +12,7 @@ namespace Manualfac.Test
             var builder = new ContainerBuilder();
             builder.RegisterType<object>();
             var container = builder.Build();
-            var lifetime = container.BeginLifetimeScope();
+            ILifetimeScope lifetime = container.BeginLifetimeScope();
             lifetime.Dispose();
             Assert.Throws<ObjectDisposedException>(() => lifetime.Resolve<object>());
         }

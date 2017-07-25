@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Manualfac
 {
@@ -9,17 +11,23 @@ namespace Manualfac
         /*
          * The disposer is used for disposing all disposable items added when it is disposed.
          */
-        HastSet<object> items = new HastSet<object>(){};
-        
+        public List<object> items = new List<object>(){};
+
         public void AddItemsToDispose(object item)
         {
-            this.items.Add(item);
+            items.Add(item);
         }
 
         protected override void Dispose(bool disposing)
         {
-            if(disposing){
-                this.items = null;
+            if(disposing)
+            {
+                foreach (object item in items)
+                {
+                    var disposableItem = item as IDisposable;
+                    disposableItem?.Dispose();
+                }
+                items = null;
             }
         }
 
