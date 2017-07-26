@@ -36,6 +36,7 @@ namespace Manualfac
             if (service == null) { throw new ArgumentNullException(nameof(service)); }
 
             ComponentRegistration componentRegistration = GetComponentRegistration(service);
+            if(componentRegistration == null) { throw new DependencyResolutionException();}
             ILifetimeScope lifetimeScope = componentRegistration.Lifetime.FindLifetimeScope(this);
 
             return lifetimeScope.GetCreateShare(componentRegistration);
@@ -61,12 +62,10 @@ namespace Manualfac
                 if(sharedInstances.ContainsKey(registration.Service)){
                     return sharedInstances[registration.Service];
                 }
-                var result = ResolveComponent(registration.Service);
-                sharedInstances[registration.Service] = result;
-                return result;
             }
-            return null;
-
+            var result = registration.Activator.Activate(this);
+            sharedInstances[registration.Service] = result;
+            return result;
             #endregion
         }
 
