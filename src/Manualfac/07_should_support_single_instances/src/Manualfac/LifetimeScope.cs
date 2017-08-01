@@ -25,7 +25,7 @@ namespace Manualfac
 
             #region Please initialize root scope
 
-            RootScope = parent;
+            RootScope = parent?.RootScope ?? this;
 
             #endregion
         }
@@ -58,6 +58,7 @@ namespace Manualfac
 
             #region Please implement this method
 
+<<<<<<< HEAD
             object result;
             if(registration.Sharing == InstanceSharing.Shared
                 && sharedInstances.ContainsKey(registration.Service))
@@ -74,6 +75,22 @@ namespace Manualfac
             }
             Disposer.AddItemsToDispose(result);
             return result;
+=======
+            if(registration.Sharing == InstanceShared.Sharing){
+               ComponentRegistration component;
+               if(sharedInstances.TryGetValue(registration.Service, out component) ){
+                return component;
+               }
+            }
+            object instance = registration.Activator.Activate(this);
+            disposer.AddItemsToDispose(instance);
+
+            if(registration.Sharing == InstanceShared.Sharing){
+                sharedInstances.Add(service, instance);
+            }
+            return instance;
+            
+>>>>>>> clean
             #endregion
         }
 
@@ -99,7 +116,11 @@ namespace Manualfac
              * We extract this method for isolation of responsibility.
              */
             ComponentRegistration result;
+<<<<<<< HEAD
             componentRegistry.TryGetRegistration(service, out result);
+=======
+            componentRegistry.TryGetRegistration(result);
+>>>>>>> clean
             return result;
 
             #endregion

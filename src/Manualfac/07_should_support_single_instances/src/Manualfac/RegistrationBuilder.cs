@@ -42,6 +42,7 @@ namespace Manualfac
              * InstancePerDependency as an example.
              */
             Lifetime = new RootScopeLifetime();
+
             Sharing = InstanceSharing.Shared;
             return this;
             #endregion
