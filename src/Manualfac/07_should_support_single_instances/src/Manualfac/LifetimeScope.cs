@@ -25,7 +25,7 @@ namespace Manualfac
 
             #region Please initialize root scope
 
-            RootScope = new RootScopeLifetime();
+            RootScope = parent?.RootScope ?? this;
 
             #endregion
         }
@@ -57,16 +57,20 @@ namespace Manualfac
 
             #region Please implement this method
 
-            if(registration.IsSharing){
-                if(sharedInstances.ContainsKey(registration.Service)){
-                    return sharedInstances[registration.Service];
-                }
-                var result = ResolveComponent(registration.Service);
-                sharedInstances[registration.Service] = result;
-                return result;
+            if(registration.Sharing == InstanceShared.Sharing){
+               ComponentRegistration component;
+               if(sharedInstances.TryGetValue(registration.Service, out component) ){
+                return component;
+               }
             }
-            return null;
+            object instance = registration.Activator.Activate(this);
+            disposer.AddItemsToDispose(instance);
 
+            if(registration.Sharing == InstanceShared.Sharing){
+                sharedInstances.Add(service, instance);
+            }
+            return instance;
+            
             #endregion
         }
 
@@ -78,7 +82,7 @@ namespace Manualfac
              * Create a child life-time scope in this method.
              */
 
-            return new LifetimeScope(componentRegistry);
+            return new LifetimeScope(componentRegistry, this);
 
             #endregion
         }

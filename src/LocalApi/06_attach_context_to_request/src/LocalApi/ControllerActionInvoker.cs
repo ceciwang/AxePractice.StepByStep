@@ -80,7 +80,11 @@ namespace LocalApi
 
         static Task<HttpResponseMessage> Execute(ActionDescriptor actionDescriptor, MethodInfo method)
         {
-            throw new NotImplementedException();
+            var response = method.Invoke(actionDescriptor.Controller, null);
+            if(method.ReturnType == typeof(HttpResponseMessage)){
+                return Task.FromResult((HttpResponseMessage)response);
+            }
+            return (Task<HttpResponseMessage>) response;
         }
 
         #endregion
