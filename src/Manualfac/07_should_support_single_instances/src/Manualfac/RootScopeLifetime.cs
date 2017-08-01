@@ -1,4 +1,5 @@
 using System;
+using System.Net.Configuration;
 
 namespace Manualfac
 {
@@ -12,7 +13,12 @@ namespace Manualfac
              * This class will always create and share instaces in root scope.
              */
 
-            throw new NotImplementedException();
+            var result = mostNestedLifetimeScope;
+            while (result.RootScope != null)
+            {
+                result = result.RootScope;
+            }
+            return result;
 
             #endregion
         }

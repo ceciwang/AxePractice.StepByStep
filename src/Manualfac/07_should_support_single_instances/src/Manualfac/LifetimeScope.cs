@@ -25,7 +25,7 @@ namespace Manualfac
 
             #region Please initialize root scope
 
-            RootScope = new RootScopeLifetime();
+            RootScope = parent;
 
             #endregion
         }
@@ -36,6 +36,7 @@ namespace Manualfac
             if (service == null) { throw new ArgumentNullException(nameof(service)); }
 
             ComponentRegistration componentRegistration = GetComponentRegistration(service);
+            if(componentRegistration == null) { throw new DependencyResolutionException();}
             ILifetimeScope lifetimeScope = componentRegistration.Lifetime.FindLifetimeScope(this);
 
             return lifetimeScope.GetCreateShare(componentRegistration);
@@ -45,11 +46,11 @@ namespace Manualfac
         {
             /*
              * There is a missing concept in lifetime scope is instance storge. Currently, part of this
-             * function is provided by ResolveComponent method. But Resolving is not equivalent with 
-             * storage. Resolving means that it will not only creat the instance, but store it to 
+             * function is provided by ResolveComponent method. But Resolving is not equivalent with
+             * storage. Resolving means that it will not only creat the instance, but store it to
              * correct lifetime scope (may be current one, and may be not) as well. And this is why
              * we extract the method.
-             * 
+             *
              * This method will create, track and cache(if needed) instance in current lifetime scope.
              * Simple enough huh? The Sharing property will help you to determine whether the activated
              * instace be shared.
@@ -57,16 +58,22 @@ namespace Manualfac
 
             #region Please implement this method
 
-            if(registration.IsSharing){
-                if(sharedInstances.ContainsKey(registration.Service)){
-                    return sharedInstances[registration.Service];
-                }
-                var result = ResolveComponent(registration.Service);
-                sharedInstances[registration.Service] = result;
+            object result;
+            if(registration.Sharing == InstanceSharing.Shared
+                && sharedInstances.ContainsKey(registration.Service))
+            {
+                result = sharedInstances[registration.Service];
+                Disposer.AddItemsToDispose(result);
                 return result;
             }
-            return null;
 
+            result = registration.Activator.Activate(this);
+            if (registration.Sharing == InstanceSharing.Shared)
+            {
+                sharedInstances[registration.Service] = result;
+            }
+            Disposer.AddItemsToDispose(result);
+            return result;
             #endregion
         }
 
@@ -78,7 +85,7 @@ namespace Manualfac
              * Create a child life-time scope in this method.
              */
 
-            return new LifetimeScope(componentRegistry);
+            return new LifetimeScope(componentRegistry, this);
 
             #endregion
         }
@@ -92,7 +99,7 @@ namespace Manualfac
              * We extract this method for isolation of responsibility.
              */
             ComponentRegistration result;
-            componentRegistry.TryGetRegistration(result);
+            componentRegistry.TryGetRegistration(service, out result);
             return result;
 
             #endregion
