@@ -14,24 +14,29 @@ namespace Manualfac.LocalApiIntegration
          * You can add a public/internal constructor and non-public fields if needed.
          */
 
+        Container container;
+        IDependencyScope scope;
+
         public ManualfacDependencyResolver(Container rootScope)
         {
-            throw new NotImplementedException();
+            this.container = rootScope;
         }
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            scope.Dispose();
+            container = null;
+            scope = null;
         }
 
         public object GetService(Type type)
         {
-            throw new NotImplementedException();
+            return scope.GetService(type);
         }
 
         public IDependencyScope BeginScope()
         {
-            throw new NotImplementedException();
+            return new ManualfacDependencyScope(container);
         }
 
         #endregion
