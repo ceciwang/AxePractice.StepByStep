@@ -10,23 +10,21 @@ namespace Manualfac.LocalApiIntegration
         /*
          * We should create a manualfac dependency resolver so that we can integrate it
          * to LocalApi.
-         * 
+         *
          * You can add a public/internal constructor and non-public fields if needed.
          */
 
-        Container container;
+        readonly Container rootScope;
         IDependencyScope scope;
 
         public ManualfacDependencyResolver(Container rootScope)
         {
-            this.container = rootScope;
+            this.rootScope = rootScope;
         }
 
         public void Dispose()
         {
-            scope.Dispose();
-            container = null;
-            scope = null;
+            scope?.Dispose();
         }
 
         public object GetService(Type type)
@@ -36,7 +34,8 @@ namespace Manualfac.LocalApiIntegration
 
         public IDependencyScope BeginScope()
         {
-            return new ManualfacDependencyScope(container);
+            scope = new ManualfacDependencyScope(rootScope.BeginLifetimeScope());
+            return scope;
         }
 
         #endregion
