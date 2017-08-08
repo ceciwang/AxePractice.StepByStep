@@ -30,10 +30,14 @@ namespace LocalApi.Webhost
                 #region Please integrate LocalAPI with this handler
 
                 // Please generate response here.
+//                if (server.IsValueCreated)
+//                {
+                    response = await server.Value.Process(request, cancellationToken);
+//                }
 
                 #endregion
                 await AspnetContextConverter.CopyResponseAsync(
-                    contextBase, 
+                    contextBase,
                     response,
                     cancellationToken);
             }

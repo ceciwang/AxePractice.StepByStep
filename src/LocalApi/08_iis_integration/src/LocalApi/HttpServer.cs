@@ -49,6 +49,10 @@ namespace LocalApi
             {
                 return new HttpResponseMessage(HttpStatusCode.InternalServerError);
             }
+            finally
+            {
+                request.Content.Dispose();
+            }
 
             #endregion
         }

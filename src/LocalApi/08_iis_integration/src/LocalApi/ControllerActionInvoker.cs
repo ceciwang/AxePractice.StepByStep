@@ -78,7 +78,7 @@ namespace LocalApi
                 .Any(a => ((IMethodProvider) a).Method.Equals(methodConstraint));
             return matchConstraint ? null : new HttpResponseMessage(HttpStatusCode.MethodNotAllowed);
         }
-        
+
         static Task<HttpResponseMessage> Execute(
             ActionDescriptor actionDescriptor, MethodInfo method)
         {
