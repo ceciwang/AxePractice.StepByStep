@@ -35,7 +35,11 @@ namespace SessionModule
             // The generated token will also be used as the returned value. Please note
             // that if the credential does not exist, it should return null.
 
-            throw new NotImplementedException();
+            bool isValidUser = users.TryGetValue(credential, out String user);
+            if(!isValidUser) { return null;}
+            var token = tokenGenerator.GenerateToken();
+            sessions.TryAdd(token, new UserSession(user));
+            return token;
 
             #endregion
         }

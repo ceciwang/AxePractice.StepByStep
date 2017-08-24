@@ -21,8 +21,7 @@ namespace SessionModuleClient
             // specified session. To ease user session access, it will store the
             // session object in request message properties.
             
-            throw new NotImplementedException();
-
+            var cookieValues = context.Request.Headers.GetValues("Set-Cookie")
             #endregion
         }
     }
