@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -73,7 +74,7 @@ namespace SessionModule.Controllers
                 #region Please implement the method removing the cookie
 
                 // Please clear the session cookie from the browser.
-                var currentCookie = request.Headers.GetCookies("Set-Cookie").FirstOrDefault();
+                var currentCookie = Request.Headers.GetCookies("Set-Cookie").FirstOrDefault();
                 if(currentCookie != null){
                     var cookie = new CookieHeaderValue("Set-Cookie", "")
                     {
