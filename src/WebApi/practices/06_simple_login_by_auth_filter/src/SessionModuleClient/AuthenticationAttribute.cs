@@ -31,10 +31,53 @@ namespace SessionModuleClient
              * should be an empty ClaimsPrincipal (unauthenticated).
              */
 
-            throw new NotImplementedException();
+            HttpRequestMessage request = context.Request;
+            var token = GetSessionToken(request);
+            
+            IDepenedencyScope scope = request.GetDependencyScope();
+            var client = (HttpClient) request.GetService(typeof(HttpClient));
+            var requestUri = request.RequestUri;
+            var response = await client.SendAsync($"{requestUri.Scheme}://{requestUri.UserInfo}:{requestUri.Authority}/session/{token}");
+            if(response.IsSucessStatusCode)
+            {
+                var userSession = response.Content.ReadAsAsync<UserSessionDto>(
+                context.ControllerContext.Configuration.Formatters, 
+                cancellationToken);
 
+                request.Principal = new ClaimsPrincipal(){
+                    ClaimsIdentity = new Claim[]{
+                        new Claim("token", userSession.Token),
+                        new Claim("userFullName", userSession.UserFullName)
+                    }
+                }
+            }else
+            {
+                request.Principal = new ClaimsPrincipal();
+            }
+                
             #endregion
         }
+
+        string GetSessionToken(HttpRequestMessage request)
+        {
+            CookieState sessionCookie = GetSessionCookie(request);
+            if(sessionCookie == null) { throw new HttpResponseException(HttpStatusCode.Forbidden)}
+            string token = sessionCookie.Value;
+            if(string.IsNullOrEmpty(token)) {throw new HttpResponseException(HttpStatusCode.Forbidden)};
+            return token;
+        }
+
+        CookieState GetSessionCookie(HttpRequestMessage request)
+        {
+            const string sessionTokenKey = "X-Session-Token";
+            var cookieHeaderValues = request.Headers.GetCookies(sessionTokenKey);
+            var sessionCookie = cookieHeaderValues
+            .Where(v => v.Expires == null || v.Expires > DateTimeOffset.Now)
+            .SelectMany(r => r.Cookies)
+            .FirstOrDefault(c => c.Name == sessionTokenKey);
+            return sessionCookie;
+        }
+
 
         public Task ChallengeAsync(
             HttpAuthenticationChallengeContext context,
@@ -50,7 +93,10 @@ namespace SessionModuleClient
              * response.
              */
 
-            throw new NotImplementedException();
+            if(RedirectToLoginOnChallenge){
+                context.Result = new RedirectToLoginPageIfUnauthorizedResult(context.Request, context.Result);
+            }
+            return Task.FromResult(0);
 
             #endregion
         }

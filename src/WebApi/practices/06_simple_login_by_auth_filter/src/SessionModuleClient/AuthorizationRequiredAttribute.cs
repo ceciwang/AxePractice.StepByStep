@@ -20,8 +20,13 @@ namespace SessionModuleClient
              * means, all users that is authenticated is allowd to access resources
              * annotated by this attribute.
              */
-
-            throw new NotImplementedException();
+            
+            var isAuthed = actionContext.Request.Principal.Identiy.IsAuthenticated;
+            if(!isAuthed)
+            {
+                throw new HttpResponseException(HttpStatusCode.Forbidden);
+            }
+            
 
             #endregion
         }
