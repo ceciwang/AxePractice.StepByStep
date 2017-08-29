@@ -32,6 +32,11 @@ namespace StreamingFacts
              * before executing the unit test.
              */
 
+            var client = ClientHelper.Client;
+            client.Timeout = 5000;
+            var response = await client.SendAsync("stream/slow");
+            var fileName = response.Content.Headers.ContentDisposition.FileName;
+
             #endregion
 
             Assert.Equal("filename.exe", filename);
